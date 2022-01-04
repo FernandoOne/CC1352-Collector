@@ -1,0 +1,10 @@
+*
+
+!/application/
+!/application/**
+!/software_stack/
+!/software_stack/**
+!cc13x2_cc26x2.cmd
+!app.cfg
+!collector.syscfg
+!.gitignore
