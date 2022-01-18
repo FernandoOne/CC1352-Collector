@@ -49,7 +49,7 @@
  *****************************************************************************/
 #include <string.h>
 #include <stdint.h>
-//esto es una prueba
+
 #include "mac_util.h"
 #include "api_mac.h"
 #include "cllc.h"
