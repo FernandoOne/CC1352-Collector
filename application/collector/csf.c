@@ -427,7 +427,7 @@ CUI_MAIN_MENU_END
 
 
 #if defined(DEVICE_TYPE_MSG)
-CUI_SUB_MENU(appSubMenu,       "<         APP         >", 5, csfMainMenu)
+CUI_SUB_MENU(appSubMenu,       "<         APP         >", 7, csfMainMenu)
 #else
 CUI_SUB_MENU(appSubMenu,       "<         APP         >", 4, csfMainMenu)
 #endif /* DEVICE_TYPE_MSG */
@@ -438,6 +438,8 @@ CUI_SUB_MENU(appSubMenu,       "<         APP         >", 4, csfMainMenu)
     CUI_MENU_ITEM_ACTION(      "< SEND DISASSOCIATION >", sensorDisassocAction)
 #if defined(DEVICE_TYPE_MSG)
     CUI_MENU_ITEM_ACTION(      "<  SEND TYPE REQUEST  >", sensorDeviceTypeRequestAction)
+    CUI_MENU_ITEM_ACTION(      "<     OPEN VALVE      >", sensorLedToggleAction)
+    CUI_MENU_ITEM_ACTION(      "<     CLOSE VALVE     >", sensorLedToggleAction)
 #endif /* DEVICE_TYPE_MSG */
 CUI_SUB_MENU_END
 
