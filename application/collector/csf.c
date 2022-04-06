@@ -902,11 +902,12 @@ void Csf_deviceSensorDataUpdate(ApiMac_sAddr_t *pSrcAddr, int8_t rssi,
     }
     else
     {
-        CUI_statusLinePrintf(csfCuiHndl, deviceStatusLine, "Sensor - Addr=0x%04x, Temp=%d, Humidity=%d, Battery=%d, RSSI=%d",
+        CUI_statusLinePrintf(csfCuiHndl, deviceStatusLine, "Sensor - Addr=0x%04x, Temp=%d, Humidity=%d, Battery=%d, Rep_int=%d, RSSI=%d",
                        pSrcAddr->addr.shortAddr,
                        pMsg->humiditySensor.temp,
                        pMsg->humiditySensor.humidity,
                        pMsg->lightSensor.rawData,
+                       pMsg->configSettings.reportingInterval,
                        rssi);
 #ifdef LPSTK
         CUI_statusLinePrintf(csfCuiHndl, lpstkDataStatusLine, "Humid=%d, Light=%d, Accl=(%d, %d, %d, %d, %d)",
