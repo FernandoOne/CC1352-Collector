@@ -347,6 +347,8 @@ static void closeNwkAction(int32_t menuEntryInex);
 static void sensorSelectAction(const char _input, char* _pLines[3], CUI_cursorInfo_t* _pCurInfo);
 static void sensorSetReportInterval(const char _input, char* _pLines[3], CUI_cursorInfo_t* _pCurInfo);
 static void sensorLedToggleAction(int32_t menuEntryInex);
+static void sensorLedTurnOnAction(int32_t menuEntryInex);
+static void sensorLedTurnOffAction(int32_t menuEntryInex);
 static void sensorDisassocAction(int32_t menuEntryInex);
 #ifdef IEEE_COEX_METRICS
 static void coexMetricsRequestAction(int32_t menuEntryInex);
@@ -363,6 +365,8 @@ static void uintToString (uint32_t value, char * str, uint8_t base, uint8_t num_
 
 #ifndef POWER_MEAS
 static void sendToggleAndUpdateUser(uint16_t shortAddr);
+static void sendTurnOnAndUpdateUser(uint16_t shortAddr);
+static void sendTurnOffAndUpdateUser(uint16_t shortAddr);
 #endif
 
 /* POWER_MEAS protects the UART in these functions */
@@ -438,8 +442,8 @@ CUI_SUB_MENU(appSubMenu,       "<         APP         >", 4, csfMainMenu)
     CUI_MENU_ITEM_ACTION(      "< SEND DISASSOCIATION >", sensorDisassocAction)
 #if defined(DEVICE_TYPE_MSG)
     CUI_MENU_ITEM_ACTION(      "<  SEND TYPE REQUEST  >", sensorDeviceTypeRequestAction)
-    CUI_MENU_ITEM_ACTION(      "<     OPEN VALVE      >", sensorLedToggleAction)
-    CUI_MENU_ITEM_ACTION(      "<     CLOSE VALVE     >", sensorLedToggleAction)
+    CUI_MENU_ITEM_ACTION(      "<     OPEN VALVE      >", sensorLedTurnOnAction)
+    CUI_MENU_ITEM_ACTION(      "<     CLOSE VALVE     >", sensorLedTurnOffAction)
 #endif /* DEVICE_TYPE_MSG */
 CUI_SUB_MENU_END
 
@@ -680,6 +684,22 @@ void Csf_processEvents(void)
 #endif /* endif for POWER_MEAS */
                 break;
             }
+            case SENSOR_ACTION_TURN_ON:
+             {
+                 /* send Toggle if CUI */
+#ifndef POWER_MEAS
+                 sendTurnOnAndUpdateUser(SelectedSensor);
+#endif /* endif for POWER_MEAS */
+                 break;
+             }
+             case SENSOR_ACTION_TURN_OFF:
+             {
+                 /* send Toggle if CUI */
+#ifndef POWER_MEAS
+                 sendTurnOffAndUpdateUser(SelectedSensor);
+#endif /* endif for POWER_MEAS */
+                 break;
+             }
             case SENSOR_ACTION_DISASSOC:
             {
                 if(Csf_sendDisassociateMsg(SelectedSensorAddr.addr.shortAddr) != 0)
@@ -2691,6 +2711,65 @@ static void sendToggleAndUpdateUser(uint16_t shortAddr)
         }
    }
 }
+
+/*!
+ * @brief       The application calls this function to turn on an LED request
+ *              and update the user through the CUI.
+ *
+ * @param       shortAddr - address of the sensor
+ *
+ */
+static void sendTurnOnAndUpdateUser(uint16_t shortAddr)
+{
+#ifdef FEATURE_SECURE_COMMISSIONING
+   /* LED toggle not accepted during CM Process*/
+   if(SM_Current_State != SM_CM_InProgress)
+#endif /* endif for FEATURE_SECURE_COMMISSIONING */
+   {
+        ApiMac_sAddr_t toggleDev;
+        toggleDev.addr.shortAddr = shortAddr;
+        if(toggleDev.addr.shortAddr != CSF_INVALID_SHORT_ADDR)
+        {
+            toggleDev.addrMode = ApiMac_addrType_short;
+            Collector_sendTurnOnLedRequest(&toggleDev);
+#ifndef CUI_DISABLE
+            CUI_statusLinePrintf(csfCuiHndl, deviceStatusLine,
+                                 "ToggleLEDRequest Sent - Addr=0x%04x",
+                                 toggleDev.addr.shortAddr);
+#endif /* CUI_DISABLE */
+        }
+   }
+}
+
+/*!
+ * @brief       The application calls this function to turn off an LED request
+ *              and update the user through the CUI.
+ *
+ * @param       shortAddr - address of the sensor
+ *
+ */
+static void sendTurnOffAndUpdateUser(uint16_t shortAddr)
+{
+#ifdef FEATURE_SECURE_COMMISSIONING
+   /* LED toggle not accepted during CM Process*/
+   if(SM_Current_State != SM_CM_InProgress)
+#endif /* endif for FEATURE_SECURE_COMMISSIONING */
+   {
+        ApiMac_sAddr_t toggleDev;
+        toggleDev.addr.shortAddr = shortAddr;
+        if(toggleDev.addr.shortAddr != CSF_INVALID_SHORT_ADDR)
+        {
+            toggleDev.addrMode = ApiMac_addrType_short;
+            Collector_sendTurnOffLedRequest(&toggleDev);
+#ifndef CUI_DISABLE
+            CUI_statusLinePrintf(csfCuiHndl, deviceStatusLine,
+                                 "ToggleLEDRequest Sent - Addr=0x%04x",
+                                 toggleDev.addr.shortAddr);
+#endif /* CUI_DISABLE */
+        }
+   }
+}
+
 #endif /* endif for POWER_MEAS */
 
 #ifndef CUI_DISABLE
@@ -3591,6 +3670,30 @@ static void sensorLedToggleAction(int32_t menuEntryInex)
 {
     Csf_events |= COLLECTOR_SENSOR_ACTION_EVT;
     Csf_sensorAction = SENSOR_ACTION_TOGGLE;
+
+    // Wake up the application thread when it waits for clock event
+    Semaphore_post(collectorSem);
+}
+
+/**
+ *  @brief Callback to be called when the UI selects toggle.
+ */
+static void sensorLedTurnOnAction(int32_t menuEntryInex)
+{
+    Csf_events |= COLLECTOR_SENSOR_ACTION_EVT;
+    Csf_sensorAction = SENSOR_ACTION_TURN_ON;
+
+    // Wake up the application thread when it waits for clock event
+    Semaphore_post(collectorSem);
+}
+
+/**
+ *  @brief Callback to be called when the UI selects toggle.
+ */
+static void sensorLedTurnOffAction(int32_t menuEntryInex)
+{
+    Csf_events |= COLLECTOR_SENSOR_ACTION_EVT;
+    Csf_sensorAction = SENSOR_ACTION_TURN_OFF;
 
     // Wake up the application thread when it waits for clock event
     Semaphore_post(collectorSem);

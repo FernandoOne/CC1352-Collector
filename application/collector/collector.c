@@ -1030,6 +1030,82 @@ Collector_status_t Collector_sendToggleLedRequest(ApiMac_sAddr_t *pDstAddr)
     return(status);
 }
 
+/*!
+ Build and send the turn on led message to a device.
+
+ Public function defined in collector.h
+ */
+Collector_status_t Collector_sendTurnOnLedRequest(ApiMac_sAddr_t *pDstAddr)
+{
+    Collector_status_t status = Collector_status_invalid_state;
+
+    /* Are we in the right state? */
+    if(cllcState >= Cllc_states_started)
+    {
+        Llc_deviceListItem_t item;
+
+        /* Is the device a known device? */
+        if(Csf_getDevice(pDstAddr, &item))
+        {
+            uint8_t buffer[SMSGS_TOGGLE_LED_REQUEST_MSG_LEN];
+
+            /* Build the message */
+            buffer[0] = (uint8_t)Smsgs_cmdIds_turnOnLedReq;
+
+            sendMsg(Smsgs_cmdIds_turnOnLedReq, item.devInfo.shortAddress,
+                    item.capInfo.rxOnWhenIdle,
+                    SMSGS_TOGGLE_LED_REQUEST_MSG_LEN,
+                    buffer);
+
+            status = Collector_status_success;
+        }
+        else
+        {
+            status = Collector_status_deviceNotFound;
+        }
+    }
+
+    return(status);
+}
+
+/*!
+ Build and send the turn off led message to a device.
+
+ Public function defined in collector.h
+ */
+Collector_status_t Collector_sendTurnOffLedRequest(ApiMac_sAddr_t *pDstAddr)
+{
+    Collector_status_t status = Collector_status_invalid_state;
+
+    /* Are we in the right state? */
+    if(cllcState >= Cllc_states_started)
+    {
+        Llc_deviceListItem_t item;
+
+        /* Is the device a known device? */
+        if(Csf_getDevice(pDstAddr, &item))
+        {
+            uint8_t buffer[SMSGS_TOGGLE_LED_REQUEST_MSG_LEN];
+
+            /* Build the message */
+            buffer[0] = (uint8_t)Smsgs_cmdIds_turnOffLedReq;
+
+            sendMsg(Smsgs_cmdIds_turnOffLedReq, item.devInfo.shortAddress,
+                    item.capInfo.rxOnWhenIdle,
+                    SMSGS_TOGGLE_LED_REQUEST_MSG_LEN,
+                    buffer);
+
+            status = Collector_status_success;
+        }
+        else
+        {
+            status = Collector_status_deviceNotFound;
+        }
+    }
+
+    return(status);
+}
+
 #if defined(DEVICE_TYPE_MSG)
 /*!
  * @brief Build and send the device type request message to a device.

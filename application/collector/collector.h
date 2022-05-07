@@ -300,6 +300,28 @@ extern void Collector_updateStats( void );
 extern Collector_status_t Collector_sendToggleLedRequest(
                 ApiMac_sAddr_t *pDstAddr);
 
+/*!
+ * @brief Build and send the turn on led message to a device.
+ *
+ * @param pDstAddr - destination address of the device to send the message
+ *
+ * @return Collector_status_success, Collector_status_invalid_state
+ *         or Collector_status_deviceNotFound
+ */
+extern Collector_status_t Collector_sendTurnOnLedRequest(
+                ApiMac_sAddr_t *pDstAddr);
+
+/*!
+ * @brief Build and send the turn off led message to a device.
+ *
+ * @param pDstAddr - destination address of the device to send the message
+ *
+ * @return Collector_status_success, Collector_status_invalid_state
+ *         or Collector_status_deviceNotFound
+ */
+extern Collector_status_t Collector_sendTurnOffLedRequest(
+                ApiMac_sAddr_t *pDstAddr);
+
 #if defined(DEVICE_TYPE_MSG)
 /*!
  * @brief Build and send the device type request message to a device.

@@ -91,6 +91,8 @@ extern "C"
 #define SENSOR_ACTION_SET_RPT_INT         1
 #define SENSOR_ACTION_DISASSOC            2
 #define SENSOR_ACTION_DEVICE_TYPE_REQ     3
+#define SENSOR_ACTION_TURN_ON             4
+#define SENSOR_ACTION_TURN_OFF            5
 
 /******************************************************************************
  Typedefs
