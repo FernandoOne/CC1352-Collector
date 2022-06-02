@@ -68,6 +68,7 @@ LED2.gpioPin.pinInstance.$name = "CONFIG_PIN_GLED";
 ti154stack.lockProject                        = true;
 ti154stack.phyType                            = "phy5kbps";
 ti154stack.transmitPower                      = "14";
+ti154stack.mode                               = "frequencyHopping";
 ti154stack.aesccmModule.$name                 = "CONFIG_AESCCM_0";
 ti154stack.ti154stackModule.$name             = "ti_ti154stack_ti154stack_config_mod0";
 ti154stack.radioConfig.codeExportConfig.$name = "ti_devices_radioconfig_code_export_param0";
